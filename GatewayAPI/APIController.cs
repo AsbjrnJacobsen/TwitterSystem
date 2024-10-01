@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using AccountService;
 using Microsoft.AspNetCore.Mvc;
+using TimelineService.Models;
 
 namespace GatewayAPI;
 
@@ -38,4 +39,22 @@ public class APIController : Controller
            .EnsureSuccessStatusCode();
         return Ok();
     }
+
+    [HttpGet("Get10Posts")]
+    public async Task<IActionResult> Get10Posts()
+    {
+        HttpClient client = new HttpClient();
+        client.BaseAddress = new Uri(_configuration["TimelineServiceUrl"]);
+        var res = await client.GetAsync("api/Timeline/GetTimeline").Result.Content.ReadAsStringAsync();
+        Timeline timeline = JsonSerializer.Deserialize<Timeline>(res);
+        if (timeline is not null)
+        {
+            return Ok(timeline);
+        }
+        else
+        {
+            return BadRequest();
+        }
+    }
+
 }
