@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PostsService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ASDBContext>(options =>
+builder.Services.AddDbContext<PSDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"));
     

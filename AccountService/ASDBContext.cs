@@ -1,16 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-
 namespace AccountService;
-
 
 public class ASDBContext : DbContext
 {
     public DbSet<Account> Accounts { get; set; }
     
-    public ASDBContext(DbContextOptions<ASDBContext> options) : base(options)
-    {
-        
-    }
+    public ASDBContext(DbContextOptions<ASDBContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,10 +18,10 @@ public class ASDBContext : DbContext
             
             //Columns
             entity.Property(p => p.Username);
+            entity.HasIndex(e => e.Username).IsUnique();
             entity.Property(p => p.Password);
             entity.Property(p => p.Email);
             entity.Property(p => p.Bio);
         });
     }
-    
 }

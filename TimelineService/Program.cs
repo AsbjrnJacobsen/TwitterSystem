@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TimelineService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,10 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ASDBContext>(options =>
+builder.Services.AddDbContext<TSDBContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"));
-    
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AccountsDBConnection"));
+});
+builder.Services.AddDbContext<TSDBContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("PostsDBConnection"));
 });
 var app = builder.Build();
 
@@ -21,8 +25,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
+app.MapControllers();
 
 app.Run();
 
