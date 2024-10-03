@@ -1,12 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 
 namespace PostsService;
-
+[ApiController]
+[Route("api/[controller]")]
 public class PostController : Controller
 {
-    // GET
-    public IActionResult Index()
+    private readonly PSDBContext _psdbContext;
+    public PostController(PSDBContext psdbContext)
     {
-        return View();
+        _psdbContext = psdbContext;
+    }
+
+    [HttpPost("PostTweet")]
+    public IActionResult PostTweet([FromBody] Post post)
+    {
+        _psdbContext.Posts.Add(post);
+        _psdbContext.SaveChanges();
+        return Ok();
     }
 }
