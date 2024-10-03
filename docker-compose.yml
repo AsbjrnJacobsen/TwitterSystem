@@ -5,8 +5,6 @@ services:
     environment:
       MSSQL_SA_PASSWORD: "pepsi1234!"
       ACCEPT_EULA: "Y"
-    volumes:
-      - post-db:/var/opt/mssql
 
   account-db:
     hostname: account-db
@@ -14,9 +12,7 @@ services:
     environment:
       MSSQL_SA_PASSWORD: "pepsi1234!"
       ACCEPT_EULA: "Y"
-    volumes:
-      - account-db:/var/opt/mssql
-  
+    
   account-service:
     build:
       context: .
@@ -34,11 +30,7 @@ services:
       
   gatewayapi:
     ports:
-      - "8080:80"
+      - "8080:8080"
     build:
       context: .
       dockerfile: GatewayAPI/Dockerfile
-
-volumes:
-  account-db:
-  post-db:
