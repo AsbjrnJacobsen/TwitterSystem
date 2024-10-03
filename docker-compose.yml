@@ -18,10 +18,26 @@ services:
       - account-db:/var/opt/mssql
   
   account-service:
+    build:
+      context: .
+      dockerfile: AccountService/Dockerfile
     
   post-service:
+    build:
+      context: .
+      dockerfile: PostsService/Dockerfile
   
   timeline-service:
+    build:
+      context: .
+      dockerfile: TimelineService/Dockerfile
+      
+  gatewayapi:
+    ports:
+      - "8080:80"
+    build:
+      context: .
+      dockerfile: GatewayAPI/Dockerfile
 
 volumes:
   account-db:
