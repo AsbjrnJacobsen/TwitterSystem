@@ -19,14 +19,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AccountService\AccountService.csproj" />
-      <ProjectReference Include="..\PostsService\PostsService.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Models\Models.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AccountService;
+namespace Models;
 
 public class Account
 {

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Models;
 namespace AccountService;
 
 public class ASDBContext : DbContext

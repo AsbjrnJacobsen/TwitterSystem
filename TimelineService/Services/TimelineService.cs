@@ -1,5 +1,4 @@
-using PostsService;
-using TimelineService.Models;
+using Models;
 
 namespace TimelineService.Services;
 

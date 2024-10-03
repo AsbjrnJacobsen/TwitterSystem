@@ -1,6 +1,5 @@
-using AccountService;
 using Microsoft.EntityFrameworkCore;
-using PostsService;
+using Models;
 
 namespace TimelineService;
 

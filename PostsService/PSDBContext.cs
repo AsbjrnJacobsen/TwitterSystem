@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Models;
 namespace PostsService;
 
 public class PSDBContext : DbContext

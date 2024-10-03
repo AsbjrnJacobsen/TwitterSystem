@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-
+using Models;
 namespace PostsService;
 [ApiController]
 [Route("api/[controller]")]

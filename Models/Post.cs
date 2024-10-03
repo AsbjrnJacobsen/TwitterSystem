@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace PostsService;
+namespace Models;
 
 public class Post
 {
