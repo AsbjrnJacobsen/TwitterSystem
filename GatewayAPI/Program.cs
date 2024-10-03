@@ -16,17 +16,4 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-
 app.Run();
-
-/*
-Methods:
-Create new User
-Login
-
-Get Profile (Picture, Bio, All user Usertweets)
-Get Timeline (Get 10 random posts -> Timeline)
-Post Tweet
-
-
-*/

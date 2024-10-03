@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using PostsService;
-
+using Models;
+Thread.Sleep(10000);
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,11 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-builder.Services.AddDbContext<PSDBContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"));
-    
-});
+builder.Services.AddDbContext<PSDBContext>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,15 +18,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.MapControllers();
 
-
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    
+    var context = services.GetRequiredService<PSDBContext>();
+    if (context.Database.GetPendingMigrations().Any())
+    {
+        context.Database.Migrate();
+    }
+}
 app.Run();
-/* - Responsible for CRUD-Posts
-Methods:
-Create  Post
-Read    Post
-Update  Post
-Delete  Post
-
-*/

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using TimelineService;
+using Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,11 +9,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddScoped<TimelineService.Services.TimelineService>();
-builder.Services.AddDbContext<TSDBContext>(options =>
+builder.Services.AddDbContext<ASDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("AccountsDBConnection"));
 });
-builder.Services.AddDbContext<TSDBContext>(options =>
+builder.Services.AddDbContext<PSDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("PostsDBConnection"));
 });
@@ -27,12 +27,4 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-
 app.Run();
-
-/* - Responsible for Timeline creating - READ ONLY
-Methods:
-Get Random Posts
-
-
-*/

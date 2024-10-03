@@ -1,6 +1,6 @@
-using AccountService;
+using Models;
 using Microsoft.EntityFrameworkCore;
-
+Thread.Sleep(10000);
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,11 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-builder.Services.AddDbContext<ASDBContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"));
-    
-});
+builder.Services.AddDbContext<ASDBContext>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,14 +19,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    
+    var context = services.GetRequiredService<ASDBContext>();
+    if (context.Database.GetPendingMigrations().Any())
+    {
+        context.Database.Migrate();
+    }
+}
 app.Run();
-
-/* - Responsible for CRUD
-Methods:
-Create  Account Related User Inputs
-Read    Account Related User Inputs
-Update  Account Related User Inputs
-Delete  Account Related User Inputs
-
-*/

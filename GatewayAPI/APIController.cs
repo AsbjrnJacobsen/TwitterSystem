@@ -45,7 +45,7 @@ public class APIController : Controller
     {
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri(_configuration["TimelineServiceUrl"]);
-        var res = await client.GetAsync("api/Timeline/GetTimeline").Result.Content.ReadAsStringAsync();
+        var res = await client.GetAsync("api/Timeline/Get10PostsForTimeline").Result.Content.ReadAsStringAsync();
         Timeline timeline = JsonSerializer.Deserialize<Timeline>(res);
         if (timeline is not null)
         {
@@ -55,15 +55,17 @@ public class APIController : Controller
     }
 
     [HttpPost("PostTweet")]
-    public async Task<IActionResult> PostTweet()
+    public async Task<IActionResult> PostTweet([FromBody]Post post)
     {
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri(_configuration["PostServiceUrl"]);
-        var res = await client.GetAsync("api/PostTweet").Result.Content.ReadAsStringAsync();
-        Post post = JsonSerializer.Deserialize<Post>(res);
+        var json = JsonSerializer.Serialize(post);
+        var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
+        var res = await client.PostAsync("api/Post/PostTweet", stringContent).Result.Content.ReadAsStringAsync();
+        Post resPost = JsonSerializer.Deserialize<Post>(res);
         if (post is not null)
         {
-            return Ok(post);
+            return Ok(resPost);
         }
         return BadRequest();
     }
