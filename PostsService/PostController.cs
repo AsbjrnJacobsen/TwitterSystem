@@ -16,6 +16,6 @@ public class PostController : Controller
     {
         _psdbContext.Posts.Add(post);
         _psdbContext.SaveChanges();
-        return Ok();
+        return Ok(post);
     }
 }
