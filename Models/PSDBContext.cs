@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Models;
-namespace PostsService;
+
+namespace Models;
 
 public class PSDBContext : DbContext
 {
@@ -23,5 +23,11 @@ public class PSDBContext : DbContext
             entity.Property(p => p.username);
             entity.Property(p => p.content);
         });
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(
+            "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;");
     }
 }
