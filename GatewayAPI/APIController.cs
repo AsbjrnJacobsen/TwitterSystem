@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using AccountService;
 using Microsoft.AspNetCore.Mvc;
+using PostsService;
 using TimelineService.Models;
 
 namespace GatewayAPI;
@@ -51,10 +52,20 @@ public class APIController : Controller
         {
             return Ok(timeline);
         }
-        else
-        {
-            return BadRequest();
-        }
+        return BadRequest();
     }
 
+    [HttpPost("PostTweet")]
+    public async Task<IActionResult> PostTweet()
+    {
+        HttpClient client = new HttpClient();
+        client.BaseAddress = new Uri(_configuration["PostServiceUrl"]);
+        var res = await client.GetAsync("api/PostTweet").Result.Content.ReadAsStringAsync();
+        Post post = JsonSerializer.Deserialize<Post>(res);
+        if (post is not null)
+        {
+            return Ok(post);
+        }
+        return BadRequest();
+    }
 }
