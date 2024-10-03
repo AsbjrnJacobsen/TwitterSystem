@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Models;
-namespace AccountService;
+
+namespace Models;
 
 public class ASDBContext : DbContext
 {
@@ -24,5 +24,11 @@ public class ASDBContext : DbContext
             entity.Property(p => p.Email);
             entity.Property(p => p.Bio);
         });
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(
+            "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;");
     }
 }
