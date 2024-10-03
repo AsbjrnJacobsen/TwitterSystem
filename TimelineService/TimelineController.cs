@@ -1,15 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
+using Models;
 
 namespace TimelineService;
 [Route("api/[controller]")]
 public class TimelineController : Controller
 {
-    // GET
-    
     [HttpGet("Get10PostsForTimeline")]
-    public IActionResult Get10PostForTimeline()
+    public async Task<IActionResult> Get10PostForTimeline()
     {
-        return Ok(_timelineService.Get10());
+        var timeline = await _timelineService.Get10();
+
+        if (timeline is null)
+            return BadRequest();
+        
+        return Ok(timeline.Tweets);
     }
 
     private readonly Services.TimelineService _timelineService;

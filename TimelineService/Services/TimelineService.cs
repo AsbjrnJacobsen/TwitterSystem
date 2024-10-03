@@ -1,18 +1,18 @@
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace TimelineService.Services;
 
 public class TimelineService
 {
-    public Timeline Get10()
+    public async Task<Timeline> Get10()
     {
-        List<Post> posts = _psdbContext.Posts
+        List<Post> posts = await _psdbContext.Posts
             .OrderBy(p => p.timestamp)
             .Take(10)
-            .ToList();
-            
+            .ToListAsync();
+        
         var returnObj = new Timeline() { Tweets = posts };
-            
         return returnObj;
     }
 
