@@ -6,7 +6,7 @@ public class TimelineService
 {
     public Timeline Get10()
     {
-        List<Post> posts = _context.Posts
+        List<Post> posts = _psdbContext.Posts
             .OrderBy(p => p.timestamp)
             .Take(10)
             .ToList();
@@ -16,9 +16,11 @@ public class TimelineService
         return returnObj;
     }
 
-    private readonly TSDBContext _context;
-    public TimelineService(TSDBContext context)
+    private readonly ASDBContext _asdbContext;
+    private readonly PSDBContext _psdbContext;
+    public TimelineService(ASDBContext asdbContext, PSDBContext psdbContext)
     {
-        _context = context;
+        _asdbContext = asdbContext;
+        _psdbContext = psdbContext;
     }
 }
