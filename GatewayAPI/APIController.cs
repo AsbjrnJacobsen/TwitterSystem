@@ -46,7 +46,7 @@ public class APIController : Controller
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri(_configuration["TimelineServiceUrl"]);
         var res = await client.GetAsync("api/Timeline/Get10PostsForTimeline").Result.Content.ReadAsStringAsync();
-        Timeline timeline = JsonSerializer.Deserialize<Timeline>(res);
+        List<Post> timeline = JsonSerializer.Deserialize<List<Post>>(res);
         if (timeline is not null)
         {
             return Ok(timeline);
