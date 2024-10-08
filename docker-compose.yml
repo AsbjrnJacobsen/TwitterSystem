@@ -17,16 +17,23 @@ services:
     build:
       context: .
       dockerfile: AccountService/Dockerfile
+    environment:
+      ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
     
   post-service:
     build:
       context: .
       dockerfile: PostsService/Dockerfile
+    environment:
+      PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
   
   timeline-service:
     build:
       context: .
       dockerfile: TimelineService/Dockerfile
+    environment:
+      ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
+      PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"      
       
   gatewayapi:
     ports:

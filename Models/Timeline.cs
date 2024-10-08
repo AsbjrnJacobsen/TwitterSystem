@@ -1,7 +1,8 @@
+using System.Text.Json.Serialization;
 
 namespace Models;
 
 public class Timeline
 {
-    public List<Post>? Tweets { get; set; }
+    [JsonInclude] public List<Post>? Tweets { get; set; }
 }

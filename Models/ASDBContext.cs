@@ -28,7 +28,7 @@ public class ASDBContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(
-            "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;");
+        string connectionString = Environment.GetEnvironmentVariable("ASDBConnectionString");
+        optionsBuilder.UseSqlServer(connectionString);
     }
 }

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Models;
 
 namespace TimelineService;
+
 [Route("api/[controller]")]
 public class TimelineController : Controller
 {
@@ -12,15 +12,14 @@ public class TimelineController : Controller
 
         if (timeline is null)
             return BadRequest();
-        
-        return Ok(timeline.Tweets);
+
+        return Ok(timeline);
     }
 
     private readonly Services.TimelineService _timelineService;
+
     public TimelineController(Services.TimelineService timelineService)
     {
         _timelineService = timelineService;
     }
-    
-    
 }

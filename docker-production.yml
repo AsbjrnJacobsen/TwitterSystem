@@ -1,0 +1,43 @@
+services:
+  post-db:
+    networks:
+      - post-db
+  account-db:
+    networks:
+      - account-db
+  account-service:
+    networks:
+      - account-db
+      - gateway
+    environment:
+      ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
+  post-service:
+    networks:
+      - post-db
+      - gateway
+    environment:
+      PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
+  timeline-service:
+    networks:
+      - post-db
+      - account-db
+      - gateway
+    environment:
+      ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
+      PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
+  gatewayapi:
+    ports:
+      - "8080:8080"
+    networks:
+      - external
+      - gateway
+        
+networks:
+  post-db:
+    internal: true
+  account-db:
+    internal: true
+  gateway:
+    internal: true
+  external:
+    
