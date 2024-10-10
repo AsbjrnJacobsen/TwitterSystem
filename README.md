@@ -30,6 +30,7 @@ Spreading from one container to another is further secured by the segmentation o
 Containers only have access to other required containers.
 
 ### Scalability
+To scale the system, we plan to add more gateway, post, account, and timeline services as needed based on bottlenecks.
 
 ### Disaster recovery
 
