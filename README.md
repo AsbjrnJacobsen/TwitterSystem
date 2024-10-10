@@ -31,6 +31,7 @@ Containers only have access to other required containers.
 
 ### Scalability
 To scale the system, we plan to add more gateway, post, account, and timeline services as needed based on bottlenecks.
+The posts and accounts databases will be scaled in the form of beefier database servers, also called vertical scaling.
 
 ### Disaster recovery
 
