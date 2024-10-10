@@ -32,9 +32,14 @@ Containers only have access to other required containers.
 ### Scalability
 To scale the system, we plan to add more gateway, post, account, and timeline services as needed based on bottlenecks.
 The posts and accounts databases will be scaled in the form of beefier database servers, also called vertical scaling.
+Depending on needs, regional servers could be setup. 
+Additionally, segmentation of data accross servers can be implemented.
 
 ### Disaster recovery
-
+Assuming docker is fault-free, the pressing issue is that of faults in the TwitterSystem. 
+By always having several instances of the different services running, downtime is minimized.
+Systems that are running into faults will be restarted with a clean state to avoid cascading faults.
+The databases will be copied to cold storage every 4 hours, so that if a fire breaks out in the datacenter, we still have data security.
 
 # Inter Service Communication
 
