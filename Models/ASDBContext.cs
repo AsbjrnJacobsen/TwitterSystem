@@ -4,8 +4,9 @@ namespace Models;
 
 public class ASDBContext : DbContext
 {
-    public DbSet<Account> Accounts { get; set; }
-    
+    public virtual DbSet<Account> Accounts { get; set; }
+    // Empty constructor for testing
+    public ASDBContext() { }
     public ASDBContext(DbContextOptions<ASDBContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -4,6 +4,9 @@ namespace Models;
 
 public class Account
 {
+    // Empty constructor for tests
+    public Account() { }
+
     [Required]
     public string Username { get; set; }
     [Required]

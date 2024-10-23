@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimelineService", "Timeline
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{1870EE99-FD7C-47D0-9547-EB859E6D31EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{04614A16-FC2C-442D-8999-9C8DA0DFE173}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceTests", "ServiceTests\ServiceTests.csproj", "{BF07CE09-6747-4EC1-A154-9D0B27766226}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,13 @@ Global
 		{1870EE99-FD7C-47D0-9547-EB859E6D31EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1870EE99-FD7C-47D0-9547-EB859E6D31EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1870EE99-FD7C-47D0-9547-EB859E6D31EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04614A16-FC2C-442D-8999-9C8DA0DFE173}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04614A16-FC2C-442D-8999-9C8DA0DFE173}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04614A16-FC2C-442D-8999-9C8DA0DFE173}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04614A16-FC2C-442D-8999-9C8DA0DFE173}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF07CE09-6747-4EC1-A154-9D0B27766226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF07CE09-6747-4EC1-A154-9D0B27766226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF07CE09-6747-4EC1-A154-9D0B27766226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF07CE09-6747-4EC1-A154-9D0B27766226}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

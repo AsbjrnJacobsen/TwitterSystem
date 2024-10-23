@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Models;
 
 namespace TimelineService;
 
@@ -6,7 +7,7 @@ namespace TimelineService;
 public class TimelineController : Controller
 {
     [HttpGet("Get10PostsForTimeline")]
-    public async Task<IActionResult> Get10PostForTimeline()
+    public async Task<ActionResult<Timeline>> Get10PostForTimeline()
     {
         var timeline = await _timelineService.Get10();
 
