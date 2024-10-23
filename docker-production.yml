@@ -1,30 +1,41 @@
 services:
   post-db:
+    environment:
+      MYSQL_SA_PASSWORD: "4KoG5G8J57tyZz"
+      ACCEPT_EULA: "Y"
     networks:
       - post-db
+  
   account-db:
+    environment:
+      MSSQL_SA_PASSWORD: "ygjm3e9AZuAr61"
+      ACCEPT_EULA: "Y"
     networks:
       - account-db
+
   account-service:
     networks:
       - account-db
       - gateway
     environment:
-      ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
+      ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=ygjm3e9AZuAr61;TrustServerCertificate=True;"
+      
   post-service:
     networks:
       - post-db
       - gateway
     environment:
-      PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
+      PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=4KoG5G8J57tyZz;TrustServerCertificate=True;"
+      
   timeline-service:
     networks:
       - post-db
       - account-db
       - gateway
     environment:
-      ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
-      PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
+      ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=ygjm3e9AZuAr61;TrustServerCertificate=True;"
+      PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=4KoG5G8J57tyZz;TrustServerCertificate=True;"
+      
   gatewayapi:
     ports:
       - "8080:8080"

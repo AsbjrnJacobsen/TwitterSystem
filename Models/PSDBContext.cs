@@ -4,7 +4,10 @@ namespace Models;
 
 public class PSDBContext : DbContext
 {
-    public DbSet<Post> Posts { get; set; }
+    public virtual DbSet<Post> Posts { get; set; }
+
+    // Empty constructor for testing
+    public PSDBContext() { }
 
     public PSDBContext(DbContextOptions<PSDBContext> options) : base(options)
     {

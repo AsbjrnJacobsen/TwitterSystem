@@ -4,5 +4,7 @@ namespace Models;
 
 public class Timeline
 {
-    [JsonInclude] public List<Post>? Tweets { get; set; }
+    [JsonInclude]
+    [JsonPropertyName("tweets")]
+    public List<Post>? Tweets { get; set; }
 }

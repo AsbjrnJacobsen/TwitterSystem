@@ -5,7 +5,7 @@ namespace TimelineService.Services;
 
 public class TimelineService
 {
-    public async Task<Timeline> Get10()
+    public virtual async Task<Timeline> Get10()
     {
         List<Post> posts = await _psdbContext.Posts
             .OrderBy(p => p.timestamp)
@@ -23,4 +23,7 @@ public class TimelineService
         _asdbContext = asdbContext;
         _psdbContext = psdbContext;
     }
+
+    // Empty constructor for tests
+    public TimelineService() { }
 }

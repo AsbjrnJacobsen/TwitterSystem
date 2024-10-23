@@ -48,6 +48,7 @@ public class AccountController : Controller
     {
         Account accountFromQuery = _context.Accounts.Where(x => x.ID == id).First();
         _context.Accounts.Remove(accountFromQuery);
+        _context.SaveChanges();
         return Ok(accountFromQuery);
     }
 }

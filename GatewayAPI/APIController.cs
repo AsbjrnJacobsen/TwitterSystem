@@ -24,13 +24,13 @@ public class APIController : Controller
         client.BaseAddress = new Uri(_configuration["AccountServiceUrl"]);
         var res = await client.GetAsync("api/Account/GetAccountByName/" + createUserRequest.Username).Result.Content
             .ReadAsStringAsync();
-        var account = JsonSerializer.Deserialize<Account>(res);
-
+        var account = res != String.Empty ? JsonSerializer.Deserialize<Account>(res) : null;
+        
         // Check if accounts returned is the same as the one supplied in the request
         if (account is not null && account.Username == createUserRequest.Username) return BadRequest();
 
         // Create account
-        client.PostAsync("api/Account/CreateAccount",
+        client.PostAsync("api/Account/CreateAccount/",
                 new StringContent(JsonSerializer.Serialize(createUserRequest), Encoding.UTF8, "application/json"))
             .Result
             .EnsureSuccessStatusCode();
@@ -42,18 +42,13 @@ public class APIController : Controller
     {
         var client = new HttpClient();
         client.BaseAddress = new Uri(_configuration["TimelineServiceUrl"]);
-
         var response = await client.GetAsync("api/Timeline/Get10PostsForTimeline");
-        //.Result.Content.ReadAsStringAsync();
-
         var res = await response.Content.ReadAsStringAsync();
-
-
-        var timeline =
-            JsonSerializer.Deserialize<Timeline>(res, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-
-        if (timeline is not null) return Ok(timeline);
+        var timeline = JsonSerializer.Deserialize<Timeline>(res, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        
+        if (timeline is not null) 
+            return Ok(timeline);
+        
         return BadRequest();
     }
 
