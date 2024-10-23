@@ -62,5 +62,3 @@ This sure would have been a great discussion to have, before we started implemen
 Going forward, we might change the communication from HTTP RPC API to message queue's.  
 
 If we were to design a twitter clone without having to implement it ourselves, we would have chosen message queue's as our communication channel because it's properties are better suited for very large systems.
-
-# Testing
