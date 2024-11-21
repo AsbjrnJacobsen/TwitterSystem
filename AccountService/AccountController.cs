@@ -23,7 +23,11 @@ public class AccountController : Controller
     [HttpGet("GetAccountByName/{name}")]
     public IActionResult GetAccountByName([FromQuery] string name)
     {
-        Account gottenAccountByName = _context.Accounts.Where(x => x.Username == name).First();
+        Account gottenAccountByName = _context.Accounts.First(x => x.Username == name);
+        
+        if(gottenAccountByName.Username == string.Empty)
+            return NotFound();
+        
         return Ok(gottenAccountByName);
     }
     
