@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
@@ -24,30 +25,28 @@ public class APIController : Controller
     public async Task<IActionResult> CreateNewUser([FromBody] Account createUserRequest)
     {
         // Http request to the AccountService, to check if the username exists as an Account already.
-        //var client = new HttpClient();
-        //client.BaseAddress = new Uri(_configuration["AccountServiceUrl"]);
-        //var res = await client.GetAsync("api/Account/GetAccountByName/" + createUserRequest.Username).Result.Content
-        //    .ReadAsStringAsync();
-        var endpointUrl = new Uri(_configuration["AccountServiceUrl"] + 
-                                "api/Account/GetAccountByName/" +
-                                createUserRequest.Username);
-        var res = await _retryLayer.GetAsyncWithRetry(endpointUrl);
-        var content = await res.Content.ReadAsStringAsync();
-        var account = content != String.Empty ? JsonSerializer.Deserialize<Account>(content) : null;
+        var endpointUrl = new Uri(_configuration["AccountServiceUrl"] + "api/Account/GetAccountByName/" + 
+                                  createUserRequest.Username);
+        var res = await _retryLayer
+            .GetAsyncWithRetry(
+                endpointUrl, 
+                HttpStatusCode.NotFound, 
+                HttpStatusCode.OK);
         
-        // Check if accounts returned is the same as the one supplied in the request
-        if (account is not null && account.Username == createUserRequest.Username) return BadRequest();
+        // If username is found, no account can be created
+        if (res.StatusCode == HttpStatusCode.OK) 
+            return BadRequest();
         
-        // Create account
-        //client.PostAsync("api/Account/CreateAccount/",
-        //        new StringContent(JsonSerializer.Serialize(createUserRequest), Encoding.UTF8, "application/json"))
-        //    .Result
-        //    .EnsureSuccessStatusCode();
-        
+        // Create account if username is not found
         var postEndpointUrl = new Uri(_configuration["AccountServiceUrl"] + "api/Account/CreateAccount"); 
-        var postContent = new StringContent(JsonSerializer.Serialize(createUserRequest), Encoding.UTF8, "application/json");
-        (await _retryLayer.PostAsyncWithRetry(postEndpointUrl, postContent)).EnsureSuccessStatusCode();
-        
+        var postContent = new StringContent(JsonSerializer.Serialize(createUserRequest), Encoding.UTF8, 
+            "application/json");
+        (await _retryLayer
+                .PostAsyncWithRetry(
+                    postEndpointUrl, 
+                    postContent,
+                    HttpStatusCode.OK)
+            ).EnsureSuccessStatusCode();
         return Ok();
     }
 

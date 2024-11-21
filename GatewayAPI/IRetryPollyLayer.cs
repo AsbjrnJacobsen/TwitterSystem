@@ -1,9 +1,13 @@
+using System.Net;
+using Polly.Retry;
+
 namespace GatewayAPI;
 
 public interface IRetryPollyLayer
 {
-    Task<HttpResponseMessage> GetAsyncWithRetry(Uri url);
-    Task<HttpResponseMessage> PutAsyncWithRetry(Uri url, HttpContent value);
-    Task<HttpResponseMessage> DeleteAsyncWithRetry(Uri url);
-    Task<HttpResponseMessage> PostAsyncWithRetry(Uri url, HttpContent value);
+    AsyncRetryPolicy<HttpResponseMessage> CreateRetryPolicy(params HttpStatusCode[] permittedStatusCodes);
+    Task<HttpResponseMessage> GetAsyncWithRetry(Uri url, params HttpStatusCode[] permittedStatusCodes);
+    Task<HttpResponseMessage> PutAsyncWithRetry(Uri url, HttpContent value, params HttpStatusCode[] permittedStatusCodes);
+    Task<HttpResponseMessage> DeleteAsyncWithRetry(Uri url, params HttpStatusCode[] permittedStatusCodes);
+    Task<HttpResponseMessage> PostAsyncWithRetry(Uri url, HttpContent value, params HttpStatusCode[] permittedStatusCodes);
 }
