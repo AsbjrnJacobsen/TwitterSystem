@@ -21,9 +21,14 @@ public class AccountController : Controller
     }
 
     [HttpGet("GetAccountByName/{name}")]
-    public IActionResult GetAccountByName([FromQuery] string name)
+    public IActionResult GetAccountByName([FromRoute] string name)
     {
-        Account gottenAccountByName = _context.Accounts.Where(x => x.Username == name).First();
+        // Check if name exists
+        if (!_context.Accounts.Any(a => a.Username == name))
+            return NotFound();
+        
+        // Get entry and return
+        Account gottenAccountByName = _context.Accounts.First(x => x.Username == name);
         return Ok(gottenAccountByName);
     }
     

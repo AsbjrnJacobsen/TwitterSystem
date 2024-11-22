@@ -16,21 +16,27 @@ services:
   account-service:
     build:
       context: .
-      dockerfile: AccountService/Dockerfile
+      dockerfile: AccountService/Debug.Dockerfile
+    ports:
+      - "8081:8080"
     environment:
       ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
     
   post-service:
     build:
       context: .
-      dockerfile: PostsService/Dockerfile
+      dockerfile: PostsService/Debug.Dockerfile
+    ports:
+      - "8082:8080"
     environment:
       PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
   
   timeline-service:
     build:
       context: .
-      dockerfile: TimelineService/Dockerfile
+      dockerfile: TimelineService/Debug.Dockerfile
+    ports:
+      - "8083:8080"
     environment:
       ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
       PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"      
@@ -40,4 +46,4 @@ services:
       - "8080:8080"
     build:
       context: .
-      dockerfile: GatewayAPI/Dockerfile
+      dockerfile: GatewayAPI/Debug.Dockerfile

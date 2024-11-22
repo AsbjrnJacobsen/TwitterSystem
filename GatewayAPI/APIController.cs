@@ -1,7 +1,10 @@
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Polly;
+using Polly.Retry;
 
 namespace GatewayAPI;
 
@@ -9,9 +12,14 @@ namespace GatewayAPI;
 [ApiController]
 public class APIController : Controller
 {
-    public APIController(IConfiguration configuration)
+    private RetryPollyLayer _retryLayer;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+    public APIController(IConfiguration configuration, RetryPollyLayer retryLayer)
     {
         _configuration = configuration;
+        _retryLayer = retryLayer;
+
+        _jsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     }
 
     private readonly IConfiguration _configuration;
@@ -20,34 +28,50 @@ public class APIController : Controller
     public async Task<IActionResult> CreateNewUser([FromBody] Account createUserRequest)
     {
         // Http request to the AccountService, to check if the username exists as an Account already.
-        var client = new HttpClient();
-        client.BaseAddress = new Uri(_configuration["AccountServiceUrl"]);
-        var res = await client.GetAsync("api/Account/GetAccountByName/" + createUserRequest.Username).Result.Content
-            .ReadAsStringAsync();
-        var account = res != String.Empty ? JsonSerializer.Deserialize<Account>(res) : null;
+        var endpointUrl = new Uri(_configuration["AccountServiceUrl"] + "api/Account/GetAccountByName/" + 
+                                  createUserRequest.Username);
+        var res = await _retryLayer
+            .GetAsyncWithRetry(
+                endpointUrl, 
+                HttpStatusCode.NotFound, 
+                HttpStatusCode.OK);
         
-        // Check if accounts returned is the same as the one supplied in the request
-        if (account is not null && account.Username == createUserRequest.Username) return BadRequest();
-
-        // Create account
-        client.PostAsync("api/Account/CreateAccount/",
-                new StringContent(JsonSerializer.Serialize(createUserRequest), Encoding.UTF8, "application/json"))
-            .Result
-            .EnsureSuccessStatusCode();
+        // If username is found, no account can be created
+        if (res.StatusCode == HttpStatusCode.OK) 
+            return BadRequest();
+        
+        // Create account if username is not found
+        var postEndpointUrl = new Uri(_configuration["AccountServiceUrl"] + "api/Account/CreateAccount"); 
+        var postContent = new StringContent(JsonSerializer.Serialize(createUserRequest), Encoding.UTF8, 
+            "application/json");
+        (await _retryLayer
+                .PostAsyncWithRetry(
+                    postEndpointUrl, 
+                    postContent,
+                    HttpStatusCode.OK)
+            ).EnsureSuccessStatusCode();
         return Ok();
     }
 
     [HttpGet("Get10Posts")]
     public async Task<ActionResult<Timeline>> Get10Posts()
     {
-        var client = new HttpClient();
-        client.BaseAddress = new Uri(_configuration["TimelineServiceUrl"]);
-        var response = await client.GetAsync("api/Timeline/Get10PostsForTimeline");
-        var res = await response.Content.ReadAsStringAsync();
-        var timeline = JsonSerializer.Deserialize<Timeline>(res, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        // Call timeline service for timeline with 10 posts
+        var endpointUrl = new Uri(_configuration["TimelineServiceUrl"] + "api/Timeline/Get10PostsForTimeline");
+        var httpRes = await _retryLayer.GetAsyncWithRetry(endpointUrl, HttpStatusCode.OK, HttpStatusCode.BadRequest);
+
+        // If OK
+        if (httpRes.StatusCode == HttpStatusCode.OK) 
+        {
+            // Read response as string
+            var res = await httpRes.Content.ReadAsStringAsync();
+            // Deserialize to timeline object
+            var timeline = JsonSerializer.Deserialize<Timeline>(res, _jsonSerializerOptions);
         
-        if (timeline is not null) 
-            return Ok(timeline);
+            // If not null return timeline
+            if (timeline is not null) 
+                return Ok(timeline);    
+        }
         
         return BadRequest();
     }
@@ -55,13 +79,27 @@ public class APIController : Controller
     [HttpPost("PostTweet")]
     public async Task<IActionResult> PostTweet([FromBody] Post post)
     {
-        var client = new HttpClient();
-        client.BaseAddress = new Uri(_configuration["PostServiceUrl"]);
+        // Serialize post to json for request
         var json = JsonSerializer.Serialize(post);
         var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
-        var res = await client.PostAsync("api/Post/PostTweet", stringContent).Result.Content.ReadAsStringAsync();
-        var resPost = JsonSerializer.Deserialize<Post>(res);
-        if (post is not null) return Ok(resPost);
+        
+        // Send the request
+        var endpointUrl = new Uri(_configuration["PostServiceUrl"] + "api/Post/PostTweet");
+        var httpRes = await _retryLayer.PostAsyncWithRetry(endpointUrl, stringContent, HttpStatusCode.OK);
+
+        if (httpRes.StatusCode == HttpStatusCode.OK)
+        {
+            // Read content as string
+            var res = await httpRes.Content.ReadAsStringAsync();
+        
+            // Deserialize string into Post object
+            var resPost = JsonSerializer.Deserialize<Post>(res);
+            
+            // Return Post
+            if (post is not null) 
+                return Ok(resPost);    
+        }
+        
         return BadRequest();
     }
 }
