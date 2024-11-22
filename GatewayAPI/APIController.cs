@@ -13,10 +13,13 @@ namespace GatewayAPI;
 public class APIController : Controller
 {
     private RetryPollyLayer _retryLayer;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
     public APIController(IConfiguration configuration, RetryPollyLayer retryLayer)
     {
         _configuration = configuration;
         _retryLayer = retryLayer;
+
+        _jsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     }
 
     private readonly IConfiguration _configuration;
@@ -53,14 +56,22 @@ public class APIController : Controller
     [HttpGet("Get10Posts")]
     public async Task<ActionResult<Timeline>> Get10Posts()
     {
-        var client = new HttpClient();
-        client.BaseAddress = new Uri(_configuration["TimelineServiceUrl"]);
-        var response = await client.GetAsync("api/Timeline/Get10PostsForTimeline");
-        var res = await response.Content.ReadAsStringAsync();
-        var timeline = JsonSerializer.Deserialize<Timeline>(res, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        // Call timeline service for timeline with 10 posts
+        var endpointUrl = new Uri(_configuration["TimelineServiceUrl"] + "api/Timeline/Get10PostsForTimeline");
+        var httpRes = await _retryLayer.GetAsyncWithRetry(endpointUrl, HttpStatusCode.OK, HttpStatusCode.BadRequest);
+
+        // If OK
+        if (httpRes.StatusCode == HttpStatusCode.OK) 
+        {
+            // Read response as string
+            var res = await httpRes.Content.ReadAsStringAsync();
+            // Deserialize to timeline object
+            var timeline = JsonSerializer.Deserialize<Timeline>(res, _jsonSerializerOptions);
         
-        if (timeline is not null) 
-            return Ok(timeline);
+            // If not null return timeline
+            if (timeline is not null) 
+                return Ok(timeline);    
+        }
         
         return BadRequest();
     }
@@ -68,13 +79,27 @@ public class APIController : Controller
     [HttpPost("PostTweet")]
     public async Task<IActionResult> PostTweet([FromBody] Post post)
     {
-        var client = new HttpClient();
-        client.BaseAddress = new Uri(_configuration["PostServiceUrl"]);
+        // Serialize post to json for request
         var json = JsonSerializer.Serialize(post);
         var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
-        var res = await client.PostAsync("api/Post/PostTweet", stringContent).Result.Content.ReadAsStringAsync();
-        var resPost = JsonSerializer.Deserialize<Post>(res);
-        if (post is not null) return Ok(resPost);
+        
+        // Send the request
+        var endpointUrl = new Uri(_configuration["PostServiceUrl"] + "api/Post/PostTweet");
+        var httpRes = await _retryLayer.PostAsyncWithRetry(endpointUrl, stringContent, HttpStatusCode.OK);
+
+        if (httpRes.StatusCode == HttpStatusCode.OK)
+        {
+            // Read content as string
+            var res = await httpRes.Content.ReadAsStringAsync();
+        
+            // Deserialize string into Post object
+            var resPost = JsonSerializer.Deserialize<Post>(res);
+            
+            // Return Post
+            if (post is not null) 
+                return Ok(resPost);    
+        }
+        
         return BadRequest();
     }
 }
