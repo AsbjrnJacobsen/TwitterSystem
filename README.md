@@ -2,49 +2,42 @@
 
 ## Reliability
 
-### T1 - Identify Potential Points of Failure
+### T1: Points of Failure
+- Network: Services and the databases rely on network connections to communicate. Docker Compose mitigates some issues, but ensuring container uptime is very important.
+- Data Storage: If databases go down (unavailable) dependent services also go down. The current system lacks failure handling.
+- Service Dependency: Failures and/or slow responses impact the system directly - there is no mitigation.
+- Strategy: Ensure container uptime, mitigate database issues, and manage service dependencies.
 
-#### Network:
-- The communication from GatewayAPI to the services relies on the network. If there is no network, the services become unreachable.
-- The services use the network to interact with the databases. Without a network, no interactions can occur.
-- Our system is run by Docker Compose, so network issues should currently have no consequence on our system.
+### Proposed Strategy
+- Network: Use replicas, DNS routing, and retry mechanisms.
+- Data Storage: Add caching and a backup database.
+- Service Dependency: Scale system with replicas.
 
-**Conclusion:** With our current design, we need to ensure that our containers are online.
+### T2: Implementation Plan
+| Component         | Plan                                      | Implementation Status       |
+|-------------------|-------------------------------------------|-----------------------------|
+| **Network**       | Plan for replicas and DNS routing         | Implemented                 |
+| **Data Storage**  | Plan for caching and a backup database    | Not yet implemented         |
+| **Service Dependency** | Retry mechanism added for GatewayAPI | Implemented                 |
 
-#### Data Storage:
-- If the database becomes unavailable, the services depending on the database are unable to complete their functions (e.g., interacting with the DB).
-- The system currently has no way to handle database unavailability.
+## Kubernetes
 
-**Conclusion:** We need to mitigate data storage failures, errors, and faults.
+# Deployment with Kubernetes
+Before doing anything else, please run this CLI command to install nginx ingress controller:
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+```
 
-#### Service Dependency:
-- Our system currently fails if there are failures in dependent services.
-- If a service is slow or unresponsive, the system will become slowed down or fail.
-
-**Conclusion:** We need to create a strategy to handle these potential failures.
-
----
-
-### Proposed Strategy Plan:
-
-- **Network:** Creation of Replicas and making use of DNS routing.
-  - **GatewayAPI to services** Add retry mechanism.  
-- **Data Storage:** Implement caching and a backup database.
-- **Service Dependency:** Scale the system and use replicas.
-
----
-
-### T2 - Implement Strategies for Reliability
-
-#### Implementations:
-- **Network:** No implementation atm. -> Creation of Replicas and making use of DNS routing.
-- **Data Storage:** No implementation atm. -> Caching and a backup database
-- **Service Dependancy:** No implementation atm.
-  - **GatewayAPI to Services Strategy:** Added retry mechanism.
-
----
-
-### T3 - Test Reliability
+We have divided our manifest files into 7 files because kubernetes uses these types and for modularity. Run in order - to setup!
+| Order | YAML File          | Command                           | Description |
+|------|--------------------|-----------------------------------|--------------|
+| 1    | namespace.yaml     | `kubectl apply -f namespace.yaml` | Namespace of the containers. |
+| 2    | db-secret.yaml     | `kubectl apply -f db-secret.yaml` | Secret store of k8s Cluster. |
+| 3    | pvc.yaml           | `kubectl apply -f pvc.yaml`       | Claims 2x1Gi of storage space. | 
+| 4    | statefulsets.yaml  | `kubectl apply -f statefulsets.yaml` | Database StatefulSet Pods with PVC. | 
+| 5    | services.yaml      | `kubectl apply -f services.yaml`  | All services as pods. |
+| 6    | deployments.yaml   | `kubectl apply -f deployments.yaml` | Deployment of pods with replicas. |
+| 7    | ingress.yaml       | `kubectl apply -f ingress.yaml`   | Nginx ingress to route traffic. |
 
 
 # Compulsory Assignment # 1
