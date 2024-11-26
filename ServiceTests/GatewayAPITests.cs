@@ -19,23 +19,27 @@ namespace ServiceTests;
 
 public class GatewayAPITests : IAsyncLifetime
 {
+    
+    private RetryPollyLayer _retryLayer;
+
     private WireMockServer _mockServer;
     private Mock<IConfiguration> _mockConfiguration;
     public async Task InitializeAsync()
     {
+        _retryLayer = new RetryPollyLayer();
         // Mock Service
         _mockServer = WireMockServer.Start(
             new WireMockServerSettings()
             {
-                Urls = new[] { "http://localhost:8080/", "http://localhost:8081/", "http://localhost:8082/" },
+                Urls = new[] { "http://localhost:8080/"}
             });
         
         // Mock IConfiguration
         _mockConfiguration = new Mock<IConfiguration>();
 
         _mockConfiguration.Setup(x => x["AccountServiceUrl"]).Returns("http://localhost:8080/");
-        _mockConfiguration.Setup(x => x["TimelineServiceUrl"]).Returns("http://localhost:8081/");
-        _mockConfiguration.Setup(x => x["PostServiceUrl"]).Returns("http://localhost:8082/");
+        _mockConfiguration.Setup(x => x["TimelineServiceUrl"]).Returns("http://localhost:8080/");
+        _mockConfiguration.Setup(x => x["PostServiceUrl"]).Returns("http://localhost:8080/");
     }
 
     public async Task DisposeAsync()
@@ -49,7 +53,6 @@ public class GatewayAPITests : IAsyncLifetime
         // === Arrange ===
         Account fakeAccountData = new()
         {
-            ID = 3,
             Username = "AppleTree",
             Password = "123456",
             Bio = "A very delicious programmer",
@@ -63,7 +66,7 @@ public class GatewayAPITests : IAsyncLifetime
             .RespondWith(Response.Create().WithStatusCode(200));
         
         // Create API controller
-        APIController apic = new APIController(_mockConfiguration.Object);
+        APIController apic = new APIController(_mockConfiguration.Object, _retryLayer);
 
         // ===== Act =====
         var result = await apic.CreateNewUser(fakeAccountData);
@@ -145,7 +148,7 @@ public class GatewayAPITests : IAsyncLifetime
         _mockServer.Given(Request.Create().WithPath("/api/Timeline/Get10PostsForTimeline").UsingGet())
             .RespondWith(Response.Create().WithBodyAsJson(timelineMock));
         
-        APIController apic = new APIController(_mockConfiguration.Object);
+        APIController apic = new APIController(_mockConfiguration.Object, _retryLayer);
         
         //Act
         var result = await apic.Get10Posts();
@@ -171,7 +174,7 @@ public class GatewayAPITests : IAsyncLifetime
         _mockServer.Given(Request.Create().WithPath("/api/Post/PostTweet").UsingPost())
             .RespondWith(Response.Create().WithBodyAsJson(postData));
         
-        APIController apic = new APIController(_mockConfiguration.Object);
+        APIController apic = new APIController(_mockConfiguration.Object, _retryLayer);
         
         //Act
         var result = await apic.PostTweet(postData);

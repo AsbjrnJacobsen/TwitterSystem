@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: accountdb
+  namespace: twitter-system
+spec:
+  serviceName: accountdb
+  replicas: 2
+  selector:
+    matchLabels:
+      app: accountdb
+  template:
+    metadata:
+      labels:
+        app: accountdb
+    spec:
+      containers:
+        - name: accountdb
+          image: mcr.microsoft.com/mssql/server:2022-latest
+          ports:
+            - containerPort: 1433
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-password-secret
+                  key: sa-password
+          volumeMounts:
+            - name: accountdb-storage
+              mountPath: /var/opt/mssql
+  volumeClaimTemplates:
+    - metadata:
+        name: accountdb-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postdb
+  namespace: twitter-system
+spec:
+  serviceName: postdb
+  replicas: 2
+  selector:
+    matchLabels:
+      app: postdb
+  template:
+    metadata:
+      labels:
+        app: postdb
+    spec:
+      containers:
+        - name: postdb
+          image: mcr.microsoft.com/mssql/server:2022-latest
+          ports:
+            - containerPort: 1433
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-password-secret
+                  key: sa-password
+          volumeMounts:
+            - name: postdb-storage
+              mountPath: /var/opt/mssql
+  volumeClaimTemplates:
+    - metadata:
+        name: postdb-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

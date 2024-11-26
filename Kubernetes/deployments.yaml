@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-service
+  namespace: twitter-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: account-service
+  template:
+    metadata:
+      labels:
+        app: account-service
+    spec:
+      containers:
+        - name: account-service
+          image: teslatorben/account-service
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASDBConnectionString
+              value: "Server=accountdb;Initial Catalog=ASDB;User ID=sa;TrustServerCertificate=True;"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-password-secret
+                  key: sa-password
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: post-service
+  namespace: twitter-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: post-service
+  template:
+    metadata:
+      labels:
+        app: post-service
+    spec:
+      containers:
+        - name: post-service
+          image: teslatorben/post-service
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PSDBConnectionString
+              value: "Server=postdb;Initial Catalog=PSDB;User ID=sa;TrustServerCertificate=True;"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-password-secret
+                  key: sa-password
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: timeline-service
+  namespace: twitter-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: timeline-service
+  template:
+    metadata:
+      labels:
+        app: timeline-service
+    spec:
+      containers:
+        - name: timeline-service
+          image: teslatorben/timeline-service
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASDBConnectionString
+              value: "Server=accountdb;Initial Catalog=ASDB;User ID=sa;TrustServerCertificate=True;"
+            - name: PSDBConnectionString
+              value: "Server=postdb;Initial Catalog=PSDB;User ID=sa;TrustServerCertificate=True;"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-password-secret
+                  key: sa-password
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gatewayapi
+  namespace: twitter-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gatewayapi
+  template:
+    metadata:
+      labels:
+        app: gatewayapi
+    spec:
+      containers:
+        - name: gatewayapi
+          image: teslatorben/gatewayapi
+          ports:
+            - containerPort: 8080
+         

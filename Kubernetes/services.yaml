@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: accountdb
+  namespace: twitter-system
+spec:
+  ports:
+    - port: 1433
+      targetPort: 1433
+  selector:
+    app: accountdb
+  clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postdb
+  namespace: twitter-system
+spec:
+  ports:
+    - port: 1433
+      targetPort: 1433
+  selector:
+    app: postdb
+  clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: account-service
+  namespace: twitter-system
+spec:
+  selector:
+    app: account-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: post-service
+  namespace: twitter-system
+spec:
+  selector:
+    app: post-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: timeline-service
+  namespace: twitter-system
+spec:
+  selector:
+    app: timeline-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gatewayapi
+  namespace: twitter-system
+spec:
+  selector:
+    app: gatewayapi
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+  type: ClusterIP
