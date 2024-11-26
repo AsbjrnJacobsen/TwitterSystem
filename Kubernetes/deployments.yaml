@@ -19,13 +19,13 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: ASDBConnectionString
-              value: "Server=accountdb;Initial Catalog=ASDB;User ID=sa;TrustServerCertificate=True;"
-            - name: DB_PASSWORD
+            - name: RAW_SECRET
               valueFrom:
                 secretKeyRef:
                   name: db-password-secret
                   key: sa-password
+            - name: ASDBConnectionString
+              value: "Server=accountdb;Initial Catalog=ASDB;User ID=sa;Password=$(RAW_SECRET);TrustServerCertificate=True;"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -48,13 +48,13 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: PSDBConnectionString
-              value: "Server=postdb;Initial Catalog=PSDB;User ID=sa;TrustServerCertificate=True;"
-            - name: DB_PASSWORD
+            - name: RAW_SECRET
               valueFrom:
                 secretKeyRef:
                   name: db-password-secret
                   key: sa-password
+            - name: PSDBConnectionString
+              value: "Server=postdb;Initial Catalog=PSDB;User ID=sa;Password=$(RAW_SECRET);TrustServerCertificate=True;"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -77,15 +77,15 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: ASDBConnectionString
-              value: "Server=accountdb;Initial Catalog=ASDB;User ID=sa;TrustServerCertificate=True;"
-            - name: PSDBConnectionString
-              value: "Server=postdb;Initial Catalog=PSDB;User ID=sa;TrustServerCertificate=True;"
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: db-password-secret
-                  key: sa-password
+          - name: RAW_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: db-password-secret
+                key: sa-password
+          - name: ASDBConnectionString
+            value: "Server=accountdb;Initial Catalog=ASDB;User ID=sa;Password=$(RAW_SECRET);TrustServerCertificate=True;"
+          - name: PSDBConnectionString
+            value: "Server=postdb;Initial Catalog=PSDB;User ID=sa;Password=$(RAW_SECRET);TrustServerCertificate=True;"
 ---
 apiVersion: apps/v1
 kind: Deployment
