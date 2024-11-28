@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +15,12 @@ public class APIController : Controller
 {
     private RetryPollyLayer _retryLayer;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
-    public APIController(IConfiguration configuration, RetryPollyLayer retryLayer)
+    private readonly ServiceAccessTokens _accessTokens;
+    public APIController(IConfiguration configuration, RetryPollyLayer retryLayer, ServiceAccessTokens accessTokens)
     {
         _configuration = configuration;
         _retryLayer = retryLayer;
+        _accessTokens = accessTokens;
 
         _jsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     }
@@ -32,7 +35,8 @@ public class APIController : Controller
                                   createUserRequest.Username);
         var res = await _retryLayer
             .GetAsyncWithRetry(
-                endpointUrl, 
+                endpointUrl,
+                new AuthenticationHeaderValue("Bearer", _accessTokens.AccountServiceToken),
                 HttpStatusCode.NotFound, 
                 HttpStatusCode.OK);
         
@@ -48,6 +52,7 @@ public class APIController : Controller
                 .PostAsyncWithRetry(
                     postEndpointUrl, 
                     postContent,
+                    new AuthenticationHeaderValue("Bearer", _accessTokens.AccountServiceToken),
                     HttpStatusCode.OK)
             ).EnsureSuccessStatusCode();
         return Ok();
@@ -58,7 +63,11 @@ public class APIController : Controller
     {
         // Call timeline service for timeline with 10 posts
         var endpointUrl = new Uri(_configuration["TimelineServiceUrl"] + "api/Timeline/Get10PostsForTimeline");
-        var httpRes = await _retryLayer.GetAsyncWithRetry(endpointUrl, HttpStatusCode.OK, HttpStatusCode.BadRequest);
+        var httpRes = await _retryLayer.GetAsyncWithRetry(
+            endpointUrl, 
+            new AuthenticationHeaderValue("Bearer", _accessTokens.TimelineServiceToken), 
+            HttpStatusCode.OK, 
+            HttpStatusCode.BadRequest);
 
         // If OK
         if (httpRes.StatusCode == HttpStatusCode.OK) 
@@ -85,7 +94,11 @@ public class APIController : Controller
         
         // Send the request
         var endpointUrl = new Uri(_configuration["PostServiceUrl"] + "api/Post/PostTweet");
-        var httpRes = await _retryLayer.PostAsyncWithRetry(endpointUrl, stringContent, HttpStatusCode.OK);
+        var httpRes = await _retryLayer.PostAsyncWithRetry(
+            endpointUrl, 
+            stringContent,
+            new AuthenticationHeaderValue("Bearer", _accessTokens.PostServiceToken),
+            HttpStatusCode.OK);
 
         if (httpRes.StatusCode == HttpStatusCode.OK)
         {

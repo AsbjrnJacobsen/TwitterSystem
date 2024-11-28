@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using Polly;
 using Polly.Retry;
 
@@ -22,23 +23,34 @@ public class RetryPollyLayer : IRetryPollyLayer
                 });
     }
 
-    public async Task<HttpResponseMessage> GetAsyncWithRetry(Uri url, params HttpStatusCode[] permittedStatusCodes)
+    public async Task<HttpResponseMessage> GetAsyncWithRetry(Uri url, AuthenticationHeaderValue authHeader,
+        params HttpStatusCode[] permittedStatusCodes)
     {
-        return await CreateRetryPolicy(permittedStatusCodes).ExecuteAsync(() => _httpClient.GetAsync(url));
+        var requestMsg = new HttpRequestMessage(HttpMethod.Get, url);
+        requestMsg.Headers.Authorization = authHeader;
+        return await CreateRetryPolicy(permittedStatusCodes).ExecuteAsync(() => _httpClient.SendAsync(requestMsg));
     }
 
-    public async Task<HttpResponseMessage> PutAsyncWithRetry(Uri url, HttpContent value, params HttpStatusCode[] permittedStatusCodes)
+    public async Task<HttpResponseMessage> PutAsyncWithRetry(Uri url, HttpContent value, AuthenticationHeaderValue authHeader, params HttpStatusCode[] permittedStatusCodes)
     {
-        return await CreateRetryPolicy(permittedStatusCodes).ExecuteAsync(() => _httpClient.PutAsync(url, value));
+        var requestMsg = new HttpRequestMessage(HttpMethod.Put, url);
+        requestMsg.Headers.Authorization = authHeader;
+        requestMsg.Content = value;
+        return await CreateRetryPolicy(permittedStatusCodes).ExecuteAsync(() => _httpClient.SendAsync(requestMsg));
     }
 
-    public async Task<HttpResponseMessage> DeleteAsyncWithRetry(Uri url, params HttpStatusCode[] permittedStatusCodes)
+    public async Task<HttpResponseMessage> DeleteAsyncWithRetry(Uri url, AuthenticationHeaderValue authHeader, params HttpStatusCode[] permittedStatusCodes)
     {
-        return await CreateRetryPolicy(permittedStatusCodes).ExecuteAsync(() => _httpClient.DeleteAsync(url));
+        var requestMsg = new HttpRequestMessage(HttpMethod.Delete, url);
+        requestMsg.Headers.Authorization = authHeader;
+        return await CreateRetryPolicy(permittedStatusCodes).ExecuteAsync(() => _httpClient.SendAsync(requestMsg));
     }
 
-    public async Task<HttpResponseMessage> PostAsyncWithRetry(Uri url, HttpContent value, params HttpStatusCode[] permittedStatusCodes)
+    public async Task<HttpResponseMessage> PostAsyncWithRetry(Uri url, HttpContent value, AuthenticationHeaderValue authHeader, params HttpStatusCode[] permittedStatusCodes)
     {
-        return await CreateRetryPolicy(permittedStatusCodes).ExecuteAsync(() => _httpClient.PostAsync(url, value));
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, url);
+        requestMsg.Headers.Authorization = authHeader;
+        requestMsg.Content = value;
+        return await CreateRetryPolicy(permittedStatusCodes).ExecuteAsync(() => _httpClient.SendAsync(requestMsg));
     }
 }

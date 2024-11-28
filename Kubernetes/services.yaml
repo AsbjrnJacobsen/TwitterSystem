@@ -79,3 +79,16 @@ spec:
       port: 8080
       targetPort: 8080
   type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault
+  namespace: vault
+spec:
+  ports:
+    - port: 8200
+      targetPort: 8200
+  selector:
+    app: vault
+  type: ClusterIP

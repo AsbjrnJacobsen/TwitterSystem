@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 
 namespace TimelineService;
 
+[Authorize]
 [Route("api/[controller]")]
 public class TimelineController : Controller
 {
