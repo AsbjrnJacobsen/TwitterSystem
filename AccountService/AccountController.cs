@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 namespace AccountService;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class AccountController : Controller

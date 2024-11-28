@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using Polly.Retry;
 
 namespace GatewayAPI;
@@ -6,8 +7,16 @@ namespace GatewayAPI;
 public interface IRetryPollyLayer
 {
     AsyncRetryPolicy<HttpResponseMessage> CreateRetryPolicy(params HttpStatusCode[] permittedStatusCodes);
-    Task<HttpResponseMessage> GetAsyncWithRetry(Uri url, params HttpStatusCode[] permittedStatusCodes);
-    Task<HttpResponseMessage> PutAsyncWithRetry(Uri url, HttpContent value, params HttpStatusCode[] permittedStatusCodes);
-    Task<HttpResponseMessage> DeleteAsyncWithRetry(Uri url, params HttpStatusCode[] permittedStatusCodes);
-    Task<HttpResponseMessage> PostAsyncWithRetry(Uri url, HttpContent value, params HttpStatusCode[] permittedStatusCodes);
+
+    Task<HttpResponseMessage> GetAsyncWithRetry(Uri url, AuthenticationHeaderValue authHeader,
+        params HttpStatusCode[] permittedStatusCodes);
+
+    Task<HttpResponseMessage> PutAsyncWithRetry(Uri url, HttpContent value, AuthenticationHeaderValue authHeader,
+        params HttpStatusCode[] permittedStatusCodes);
+
+    Task<HttpResponseMessage> DeleteAsyncWithRetry(Uri url, AuthenticationHeaderValue authHeader,
+        params HttpStatusCode[] permittedStatusCodes);
+
+    Task<HttpResponseMessage> PostAsyncWithRetry(Uri url, HttpContent value, AuthenticationHeaderValue authHeader,
+        params HttpStatusCode[] permittedStatusCodes);
 }

@@ -42,7 +42,14 @@ services:
     networks:
       - external
       - gateway
-        
+    depends_on:
+      account-service:
+        condition: service_started
+      post-service:
+        condition: service_started
+      timeline-service:
+        condition: service_started
+
 networks:
   post-db:
     internal: true
