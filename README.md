@@ -1,4 +1,7 @@
 # Compulsory Assignment 2
+<p align="center">
+  <img src="imgs/Bweeper.webp" alt="Logo for Bweeper"/>
+</p>  
 
 ## Reliability
 
