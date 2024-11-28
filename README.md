@@ -1,6 +1,6 @@
 # Compulsory Assignment 2
 <p align="center">
-  <img src="imgs/Bweeper.webp" alt="Logo for Bweeper"/>
+  <img src="imgs/Bweeper.webp" width="300px"  alt="Logo for Bweeper"/>
 </p>  
 
 ## Reliability
@@ -46,7 +46,14 @@ We have divided our manifest files into 7 files because kubernetes uses these ty
 As a first security messure, the deployment in either docker compose or kubernetes has been isolated from the host network, such that the only way into the system is through the gateway/ingress point.
 This effectively avoids the problem of abuse of internal services.  
 
-Addtional messures can be taken such that inter-service communication is secured. In the case of this system, there is no security strengthening in doing so, and therefore it has been left as is.
+Addtional messures can be taken such that inter-service communication is secured. In the case of this system, there is no security strengthening in doing so, and therefore it has been left as is.  
+
+We found this tool kube-bench ` https://github.com/aquasecurity/kube-bench ` that we used in order to check our cluster / kubernetes setup.  
+We think fixing the given issues are outside of the scope of this assignment, but we want to use the result of the kube-bench check, ` job.yaml `, to underline our previous point, our system is adequately secured.  
+
+<p align="center">
+  <img src="imgs/kb-res.png" width="300px"  alt="Summary Total - job.yaml"/>
+</p>  
 
 # Compulsory Assignment # 1
 ## Design, Architecture, and Scoping
