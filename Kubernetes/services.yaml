@@ -92,3 +92,12 @@ spec:
   selector:
     app: vault
   type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault-proxy
+  namespace: twitter-system
+spec:
+  type: ExternalName
+  externalName: vault.vault.svc.cluster.local

@@ -17,29 +17,44 @@ services:
     build:
       context: .
       dockerfile: AccountService/Debug.Dockerfile
+    depends_on:
+      vault:
+        condition: service_healthy
     ports:
       - "8081:8080"
     environment:
       ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
+      VAULT_URL: "http://vault:8200"
+      VAULT_TOKEN: ""
     
   post-service:
     build:
       context: .
       dockerfile: PostsService/Debug.Dockerfile
+    depends_on:
+      vault:
+        condition: service_healthy
     ports:
       - "8082:8080"
     environment:
       PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
+      VAULT_URL: "http://vault:8200"
+      VAULT_TOKEN: ""
   
   timeline-service:
     build:
       context: .
       dockerfile: TimelineService/Debug.Dockerfile
+    depends_on:
+      vault:
+        condition: service_healthy
     ports:
       - "8083:8080"
     environment:
       ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
-      PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"      
+      PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
+      VAULT_URL: "http://vault:8200"
+      VAULT_TOKEN: ""
       
   gatewayapi:
     ports:
@@ -54,3 +69,28 @@ services:
         condition: service_started
       timeline-service:
         condition: service_started
+    environment:
+      TimelineServiceUrl: "http://timeline-service:8080/"
+      PostServiceUrl: "http://post-service:8080/"
+      AccountServiceUrl: "http://account-service:8080/"
+      VAULT_URL: "http://vault:8200"
+      VAULT_TOKEN: "my-token"
+  
+  vault:
+    image: hashicorp/vault:latest
+    container_name: vault
+    ports:
+      - "8200:8200"
+    environment:
+      #VAULT_DEV_ROOT_TOKEN_ID: "my-token"
+      #VAULT_LOCAL_CONFIG: '{"storage": {"file": {"path": "/vault/file"}}, "default_lease_ttl": "168h", "max_lease_ttl": "720h", "ui": true}'
+      VAULT_ADDR: "http://0.0.0.0:8200"
+      VAULT_API_ADDR: "http://0.0.0.0:8200"
+      VAULT_ADDRESS: "http://0.0.0.0:8200"
+    volumes:
+      - ./file:/vault/file:rw
+      - ./data:/vault/data:rw
+      - ./config:/vault/config/:rw
+    cap_add:
+      - IPC_LOCK
+    entrypoint: vault server -config /vault/config/config.hcl

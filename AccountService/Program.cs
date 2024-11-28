@@ -19,7 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ASDBContext>();
 
 // ===== Generate JWT Token for access to service =====
-var jwtKey = Encoding.ASCII.GetBytes(Encoding.UTF8.GetString(RandomNumberGenerator.GetBytes(16)));
+var jwtKey = Encoding.ASCII.GetBytes(Encoding.UTF8.GetString(RandomNumberGenerator.GetBytes(38)));
 var securityKey = new SymmetricSecurityKey(jwtKey);
 var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -56,7 +56,7 @@ vaultClient.SetToken(Environment.GetEnvironmentVariable("VAULT_TOKEN"));
 bool wroteTokenSuccess = false;
 try
 {
-    var secretData = token;
+    var secretData = new Dictionary<string, string>{{"AccountServiceToken", token }};
     var kvRequestData = new KvV2WriteRequest(secretData);
     vaultClient.Secrets.KvV2Write("AccountServiceToken", kvRequestData);
     wroteTokenSuccess = true;
@@ -86,4 +86,6 @@ using (var scope = app.Services.CreateScope())
         context.Database.Migrate();
     }
 }
+app.UseAuthentication();
+app.UseAuthorization();
 app.Run();

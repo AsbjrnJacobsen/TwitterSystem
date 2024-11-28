@@ -26,7 +26,7 @@ builder.Services.AddDbContext<PSDBContext>(options =>
 });
 
 // ===== Generate JWT Token for access to service =====
-var jwtKey = Encoding.ASCII.GetBytes(Encoding.UTF8.GetString(RandomNumberGenerator.GetBytes(16)));
+var jwtKey = Encoding.ASCII.GetBytes(Encoding.UTF8.GetString(RandomNumberGenerator.GetBytes(38)));
 var securityKey = new SymmetricSecurityKey(jwtKey);
 var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -63,7 +63,7 @@ vaultClient.SetToken(Environment.GetEnvironmentVariable("VAULT_TOKEN"));
 bool wroteTokenSuccess = false;
 try
 {
-    var secretData = token;
+    var secretData = new Dictionary<string, string>{{"TimelineServiceToken", token}};
     var kvRequestData = new KvV2WriteRequest(secretData);
     vaultClient.Secrets.KvV2Write("TimelineServiceToken", kvRequestData);
     wroteTokenSuccess = true;
@@ -82,5 +82,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();

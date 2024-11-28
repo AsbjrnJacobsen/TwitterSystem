@@ -4,7 +4,7 @@ using Vault.Client;
 using Vault.Model;
 
 // Sleep for 5 seconds to make sure that services have registered their access tokens in the Vault
-Thread.Sleep(5000);
+Thread.Sleep(15000);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
-// Retry layer for http requests to services.
-builder.Services.AddTransient<RetryPollyLayer>();
+
 
 // ========= HASHICORP VAULT ========= 
 // Vault access to get JWT Tokens for service access
@@ -34,9 +33,9 @@ try
     VaultResponse<KvV2ReadResponse> tst = vaultClient.Secrets.KvV2Read("TimelineServiceToken");
     
     // Write to tokens access object
-    tokens.AccountServiceToken = ast.Data.Data.ToString()!;
-    tokens.PostServiceToken = ast.Data.Data.ToString()!;
-    tokens.TimelineServiceToken = ast.Data.Data.ToString()!;
+    tokens.AccountServiceToken = ((KeyValuePair<string, string>)ast.Data.Data).Value;
+    tokens.PostServiceToken = ((KeyValuePair<string, string>)pst.Data.Data).Value;
+    tokens.TimelineServiceToken = ((KeyValuePair<string, string>)tst.Data.Data).Value;
     getTokensSucess = true;
 }
 catch (VaultApiException e) { Console.WriteLine("Failed to read secret with message {0}", e.Message); }
@@ -47,6 +46,9 @@ if (!getTokensSucess) {
 // Make tokens available as dependency injectable instance
 builder.Services.AddSingleton(tokens);
 // ========= HASHICORP VAULT END =========
+
+// Retry layer for http requests to services.
+builder.Services.AddTransient<RetryPollyLayer>();
 
 var app = builder.Build();
 
