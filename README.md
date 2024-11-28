@@ -22,7 +22,7 @@
 
 ## Kubernetes
 
-# Deployment with Kubernetes
+## Deployment with Kubernetes
 Before doing anything else, please run this CLI command to install nginx ingress controller:
 ```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
@@ -39,6 +39,11 @@ We have divided our manifest files into 7 files because kubernetes uses these ty
 | 6    | deployments.yaml   | `kubectl apply -f deployments.yaml` | Deployment of pods with replicas. |
 | 7    | ingress.yaml       | `kubectl apply -f ingress.yaml`   | Nginx ingress to route traffic. |
 
+## Security in Microservices
+As a first security messure, the deployment in either docker compose or kubernetes has been isolated from the host network, such that the only way into the system is through the gateway/ingress point.
+This effectively avoids the problem of abuse of internal services.  
+
+Addtional messures can be taken such that inter-service communication is secured. In the case of this system, there is no security strengthening in doing so, and therefore it has been left as is.
 
 # Compulsory Assignment # 1
 ## Design, Architecture, and Scoping
