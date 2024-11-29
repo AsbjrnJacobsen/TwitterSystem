@@ -19,7 +19,9 @@ builder.Services.AddControllers();
 // ========= HASHICORP VAULT ========= 
 // Vault access to get JWT Tokens for service access
 string address = Environment.GetEnvironmentVariable("VAULT_URL")!;
-VaultConfiguration config = new VaultConfiguration(address);
+
+VaultConfiguration config = new VaultConfiguration(address, null, null, null, new RateLimitConfiguration(500, TimeSpan.FromSeconds(1)));
+
 VaultClient vaultClient = new VaultClient(config);
 vaultClient.SetToken(Environment.GetEnvironmentVariable("VAULT_TOKEN"));
 

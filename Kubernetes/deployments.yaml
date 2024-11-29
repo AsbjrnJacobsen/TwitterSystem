@@ -163,6 +163,8 @@ spec:
               value: "my-token"
             - name: VAULT_DEV_ROOT_TOKEN_ID
               value: "my-token"
+            - name: VAULT_RATE_LIMIT
+              value: "50"
           ports:
             - containerPort: 8200
           volumeMounts:
