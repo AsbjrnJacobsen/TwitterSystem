@@ -1,4 +1,5 @@
 using GatewayAPI;
+using Newtonsoft.Json;
 using Vault;
 using Vault.Client;
 using Vault.Model;
@@ -20,7 +21,7 @@ builder.Services.AddControllers();
 // Vault access to get JWT Tokens for service access
 string address = Environment.GetEnvironmentVariable("VAULT_URL")!;
 
-VaultConfiguration config = new VaultConfiguration(address, null, null, null, new RateLimitConfiguration(500, TimeSpan.FromSeconds(1)));
+VaultConfiguration config = new VaultConfiguration(address, null, null, null, null);
 
 VaultClient vaultClient = new VaultClient(config);
 vaultClient.SetToken(Environment.GetEnvironmentVariable("VAULT_TOKEN"));
@@ -31,13 +32,18 @@ try
 {
     // Get tokens
     VaultResponse<KvV2ReadResponse> ast = vaultClient.Secrets.KvV2Read("AccountServiceToken");
+    Thread.Sleep(500);
     VaultResponse<KvV2ReadResponse> pst = vaultClient.Secrets.KvV2Read("PostServiceToken");
+    Thread.Sleep(500);
     VaultResponse<KvV2ReadResponse> tst = vaultClient.Secrets.KvV2Read("TimelineServiceToken");
     
     // Write to tokens access object
-    tokens.AccountServiceToken = ((KeyValuePair<string, string>)ast.Data.Data).Value;
-    tokens.PostServiceToken = ((KeyValuePair<string, string>)pst.Data.Data).Value;
-    tokens.TimelineServiceToken = ((KeyValuePair<string, string>)tst.Data.Data).Value;
+    //tokens.AccountServiceToken = ((KeyValuePair<string, string>)ast.Data.Data).Value;
+    tokens.AccountServiceToken = JsonConvert.DeserializeObject<KeyValuePair<string, string>>(ast.Data.Data.ToString()!).Value;
+    //tokens.PostServiceToken = ((KeyValuePair<string, string>)pst.Data.Data).Value;
+    tokens.AccountServiceToken = JsonConvert.DeserializeObject<KeyValuePair<string, string>>(pst.Data.Data.ToString()!).Value;
+    //tokens.TimelineServiceToken = ((KeyValuePair<string, string>)tst.Data.Data).Value;
+    tokens.AccountServiceToken = JsonConvert.DeserializeObject<KeyValuePair<string, string>>(tst.Data.Data.ToString()!).Value;
     getTokensSucess = true;
 }
 catch (VaultApiException e) { Console.WriteLine("Failed to read secret with message {0}", e.Message); }
