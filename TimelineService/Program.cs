@@ -65,7 +65,7 @@ try
 {
     var secretData = new Dictionary<string, string>{{"TimelineServiceToken", token}};
     var kvRequestData = new KvV2WriteRequest(secretData);
-    vaultClient.Secrets.KvV2Write("TimelineServiceToken", kvRequestData);
+    vaultClient.Secrets.KvV2Write("TimelineServiceToken", kvRequestData, "secret");
     wroteTokenSuccess = true;
 }
 catch (VaultApiException e) { Console.WriteLine("Failed to read secret with message {0}", e.Message); }

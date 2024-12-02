@@ -25,7 +25,7 @@ services:
     environment:
       ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
       VAULT_URL: "http://vault:8200"
-      VAULT_TOKEN: ""
+      VAULT_TOKEN: "my-token"
     
   post-service:
     build:
@@ -39,7 +39,7 @@ services:
     environment:
       PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
       VAULT_URL: "http://vault:8200"
-      VAULT_TOKEN: ""
+      VAULT_TOKEN: "my-token"
   
   timeline-service:
     build:
@@ -54,7 +54,7 @@ services:
       ASDBConnectionString: "Server=account-db;Initial Catalog=ASDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
       PSDBConnectionString: "Server=post-db;Initial Catalog=PSDB;User ID=sa;Password=pepsi1234!;TrustServerCertificate=True;"
       VAULT_URL: "http://vault:8200"
-      VAULT_TOKEN: ""
+      VAULT_TOKEN: "my-token"
       
   gatewayapi:
     ports:
@@ -78,19 +78,51 @@ services:
   
   vault:
     image: hashicorp/vault:latest
-    container_name: vault
     ports:
       - "8200:8200"
     environment:
-      #VAULT_DEV_ROOT_TOKEN_ID: "my-token"
+      VAULT_DEV_ROOT_TOKEN_ID: "my-token"
       #VAULT_LOCAL_CONFIG: '{"storage": {"file": {"path": "/vault/file"}}, "default_lease_ttl": "168h", "max_lease_ttl": "720h", "ui": true}'
-      VAULT_ADDR: "http://0.0.0.0:8200"
-      VAULT_API_ADDR: "http://0.0.0.0:8200"
-      VAULT_ADDRESS: "http://0.0.0.0:8200"
+      #VAULT_ADDR: "http://0.0.0.0:8200"
+      #VAULT_API_ADDR: "http://0.0.0.0:8200"
+      #VAULT_ADDRESS: "http://0.0.0.0:8200"
     volumes:
-      - ./file:/vault/file:rw
-      - ./data:/vault/data:rw
-      - ./config:/vault/config/:rw
+      - ./vault/file:/vault/file:rw
+      - ./vault/data:/vault/data:rw
+      - ./vault/config:/vault/config/:rw
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "--proxy", "off", "http://127.0.0.1:8200/v1/sys/health?standbyok=true" ]
+      interval: 3s
+      timeout: 5s
+      retries: 30
     cap_add:
       - IPC_LOCK
-    entrypoint: vault server -config /vault/config/config.hcl
+    entrypoint: >
+      sh -c 'echo "ui = true
+      
+      storage \"file\" {
+        path = \"/vault/data\"
+      }
+      
+      api_addr = \"http://127.0.0.1:8200\"
+      
+      default_max_request_duration = \"1s\"
+      
+      dev {
+        dev_root_token_id = \"my-token\"
+      }
+      
+      controller {
+        api_rate_limit_disable = true
+      }
+      
+      listener "tcp" {
+        address = \"vault:8200\"
+        tls_disable = true
+      }
+      
+      path \"kv-v2/data/*\" {
+        capabilities = [\"read\", \"write\"]
+        rate_limit = \"5000r/s\" # Allow 50 requests per second
+      }
+      " > /vault/config/config.hcl && vault server -dev -dev-root-token-id=my-token -config /vault/config/config.hcl'

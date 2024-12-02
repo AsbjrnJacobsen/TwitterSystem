@@ -31,11 +31,11 @@ bool getTokensSucess = false;
 try
 {
     // Get tokens
-    VaultResponse<KvV2ReadResponse> ast = vaultClient.Secrets.KvV2Read("AccountServiceToken");
+    VaultResponse<KvV2ReadResponse> ast = vaultClient.Secrets.KvV2Read("AccountServiceToken", "secret");
     Thread.Sleep(500);
-    VaultResponse<KvV2ReadResponse> pst = vaultClient.Secrets.KvV2Read("PostServiceToken");
+    VaultResponse<KvV2ReadResponse> pst = vaultClient.Secrets.KvV2Read("PostServiceToken", "secret");
     Thread.Sleep(500);
-    VaultResponse<KvV2ReadResponse> tst = vaultClient.Secrets.KvV2Read("TimelineServiceToken");
+    VaultResponse<KvV2ReadResponse> tst = vaultClient.Secrets.KvV2Read("TimelineServiceToken", "secret");
     
     // Write to tokens access object
     //tokens.AccountServiceToken = ((KeyValuePair<string, string>)ast.Data.Data).Value;
