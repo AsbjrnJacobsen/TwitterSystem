@@ -21,4 +21,3 @@ data:
       capabilities = ["read", "write"]
       rate_limit = "5000r/s" # Allow 50 requests per second
     }
- 

@@ -58,7 +58,7 @@ try
 {
     var secretData = new Dictionary<string, string>{{"AccountServiceToken", token }};
     var kvRequestData = new KvV2WriteRequest(secretData);
-    vaultClient.Secrets.KvV2Write("AccountServiceToken", kvRequestData);
+    vaultClient.Secrets.KvV2Write("AccountServiceToken", kvRequestData, "secret");
     wroteTokenSuccess = true;
 }
 catch (VaultApiException e) { Console.WriteLine("Failed to read secret with message {0}", e.Message); }
