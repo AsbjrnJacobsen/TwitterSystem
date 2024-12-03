@@ -65,6 +65,15 @@ We think fixing the given issues are outside of the scope of this assignment, bu
   <img src="imgs/kb-res.png" width="300px"  alt="Summary Total - job.yaml"/>
 </p>  
 
+## Design patterns
+A sidecar pattern has been implemented in the form of Serilog & Seq logging, that routes all logging from the API gateway into Seq for easy lookup.
+Most microservice design patterns found were not applicable.   
+For instance service healthy is obsolete as the functionality gained is already avialble through Kubernetes/Docker Compose.  
+The Sage pattern is too complex and also unncessary for this system, as we do not deal with complex data transactions.
+The Database per Service pattern is partially used, which is fundamental for the Saga pattern, but yet again the Saga pattern is too complex for our needs.  
+A self study on design patterns lead us to the conclusion that dependency injection is a design pattern, which we have used.  
+
+
 # Compulsory Assignment # 1
 ## Design, Architecture, and Scoping
 <p align="center">
