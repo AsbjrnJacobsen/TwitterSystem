@@ -3,6 +3,10 @@
   <img src="imgs/Bweeper.webp" width="300px"  alt="Logo for Bweeper"/>
 </p>  
 
+## GatewayAPI
+Since we already had implemented an GatewayAPI in the earlier version, we have not re-implemented it.  
+The Gateway fullfills all requirements. 
+
 ## Reliability
 
 ### T1: Points of Failure
@@ -46,7 +50,13 @@ We have divided our manifest files into 7 files because kubernetes uses these ty
 As a first security messure, the deployment in either docker compose or kubernetes has been isolated from the host network, such that the only way into the system is through the gateway/ingress point.
 This effectively avoids the problem of abuse of internal services.  
 
-Addtional messures can be taken such that inter-service communication is secured. In the case of this system, there is no security strengthening in doing so, and therefore it has been left as is.  
+Addtional messures can be taken such that inter-service communication is secured. In the case of this system, there is no security strengthening in doing so. However we have done it anyway, as it is a requirement for the assignment.  
+  
+We have implemented:
+- a Vault (Hashicorp vault)
+- Interservice JWT Authentication
+  
+The services generate JWT tokens and send them to the vault. The Gateway gets the tokens when communicating with the services.
 
 We found this tool kube-bench ` https://github.com/aquasecurity/kube-bench ` that we used in order to check our cluster / kubernetes setup.  
 We think fixing the given issues are outside of the scope of this assignment, but we want to use the result of the kube-bench check, ` job.yaml `, to underline our previous point, our system is adequately secured.  
