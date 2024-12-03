@@ -149,6 +149,10 @@ spec:
       containers:
         - name: vault
           image: hashicorp/vault:latest
+          securityContext:
+            capabilities:
+              add:
+                - IPC_LOCK
           args:
             - "server"
             - "-dev"

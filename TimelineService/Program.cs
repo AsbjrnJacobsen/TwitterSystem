@@ -26,7 +26,8 @@ builder.Services.AddDbContext<PSDBContext>(options =>
 });
 
 // ===== Generate JWT Token for access to service =====
-var jwtKey = Encoding.ASCII.GetBytes(Encoding.UTF8.GetString(RandomNumberGenerator.GetBytes(38)));
+//var jwtKey = Encoding.ASCII.GetBytes(Encoding.UTF8.GetString(RandomNumberGenerator.GetBytes(38)));
+var jwtKey = Encoding.UTF8.GetBytes(builder.Configuration["JWT_SECRET"]!);
 var securityKey = new SymmetricSecurityKey(jwtKey);
 var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 

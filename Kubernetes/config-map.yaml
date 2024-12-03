@@ -6,17 +6,23 @@ metadata:
 data:
   vault.hcl: |
     ui = true
+    
     storage "file" {
       path = "/vault/data"
     }
+    
     api_addr = "http://127.0.0.1:8200"
+    
     default_max_request_duration = "1s"
+    
     dev {
       dev_root_token_id = "my-token"
     }
+    
     controller {
       api_rate_limit_disable = true
     }
+    
     path "kv-v2/data/*" {
       capabilities = ["read", "write"]
       rate_limit = "5000r/s" # Allow 50 requests per second
