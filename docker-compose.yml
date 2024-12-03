@@ -1,4 +1,14 @@
 services:
+  seq:
+    image: datalust/seq
+    ports:
+      - 5341:5341
+      - 5342:80
+    volumes:
+      - ./seq_data:/dataqq
+    environment:
+      - ACCEPT_EULA=Y
+  
   post-db:
     hostname: post-db
     image: mcr.microsoft.com/mssql/server:2022-latest

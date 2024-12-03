@@ -5,6 +5,8 @@ using Newtonsoft.Json.Linq;
 using Vault;
 using Vault.Client;
 using Vault.Model;
+using Serilog;
+using Serilog.Events;
 
 // Sleep for 5 seconds to make sure that services have registered their access tokens in the Vault
 Thread.Sleep(15000);
@@ -17,7 +19,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
+// Add serilog logger instance for logging
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Verbose()
+    .WriteTo.Console()
+    .WriteTo.Seq("http://seq:5341/")
+    .CreateLogger();
 
+builder.Host.UseSerilog();
 
 // ========= HASHICORP VAULT ========= 
 // Vault access to get JWT Tokens for service access
@@ -70,5 +79,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseSerilogRequestLogging();
 app.MapControllers();
 app.Run();
