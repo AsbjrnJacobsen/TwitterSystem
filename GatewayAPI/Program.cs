@@ -1,5 +1,7 @@
 using GatewayAPI;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Vault;
 using Vault.Client;
 using Vault.Model;
@@ -39,11 +41,12 @@ try
     
     // Write to tokens access object
     //tokens.AccountServiceToken = ((KeyValuePair<string, string>)ast.Data.Data).Value;
-    tokens.AccountServiceToken = JsonConvert.DeserializeObject<KeyValuePair<string, string>>(ast.Data.Data.ToString()!).Value;
+    tokens.AccountServiceToken = ((JObject)ast.Data.Data)["AccountServiceToken"]!.ToString();
     //tokens.PostServiceToken = ((KeyValuePair<string, string>)pst.Data.Data).Value;
-    tokens.AccountServiceToken = JsonConvert.DeserializeObject<KeyValuePair<string, string>>(pst.Data.Data.ToString()!).Value;
+    tokens.PostServiceToken = ((JObject)pst.Data.Data)["PostServiceToken"]!.ToString();
     //tokens.TimelineServiceToken = ((KeyValuePair<string, string>)tst.Data.Data).Value;
-    tokens.AccountServiceToken = JsonConvert.DeserializeObject<KeyValuePair<string, string>>(tst.Data.Data.ToString()!).Value;
+    tokens.TimelineServiceToken = ((JObject)tst.Data.Data)["TimelineServiceToken"]!.ToString();
+    
     getTokensSucess = true;
 }
 catch (VaultApiException e) { Console.WriteLine("Failed to read secret with message {0}", e.Message); }
