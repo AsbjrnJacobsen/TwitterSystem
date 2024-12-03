@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="imgs/Bweeper.png" width="250px"  alt="Logo for Bweeper"/>
+</p>  
+
 # Compulsory Assignment 2
 <p align="center">
-  <img src="imgs/Bweeper.webp" width="300px"  alt="Logo for Bweeper"/>
+  <img src="imgs/diagram2.png" alt="Logo for Bweeper"/>
 </p>  
 
 ## GatewayAPI
