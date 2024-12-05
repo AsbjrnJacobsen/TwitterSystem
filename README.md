@@ -32,8 +32,11 @@ The Gateway fullfills all requirements.
 | **Service Dependency** | Retry mechanism added for GatewayAPI | Implemented                 |
 
 ## Kubernetes
+  
+<p align="center">
+  <img src="imgs/get pods.png" width="300px"  alt="kubectl get pods -A"/>
+</p>  
 
-## Deployment with Kubernetes
 Before doing anything else, please run this CLI command to install nginx ingress controller:
 ```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
