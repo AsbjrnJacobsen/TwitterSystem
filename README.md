@@ -34,7 +34,7 @@ The Gateway fullfills all requirements.
 ## Kubernetes
   
 <p align="center">
-  <img src="imgs/get pods.png" width="300px"  alt="kubectl get pods -A"/>
+  <img src="imgs/get pods.png" alt="kubectl get pods -A"/>
 </p>  
 
 Before doing anything else, please run this CLI command to install nginx ingress controller:
